@@ -1,5 +1,13 @@
 from contextlib import contextmanager
 import mysql.connector
+from datetime import datetime
+
+def is_valid_date(date_str):
+    try:
+        datetime.strptime(date_str, '%Y-%m-%d')  # Adjust the format to match your date strings
+        return True
+    except ValueError:
+        return False
 
 @contextmanager
 def get_db_cursor(commit=False):
@@ -28,6 +36,9 @@ def get_db_cursor(commit=False):
 
 # fetching functions
 def fetch_expenses_for_date(date):
+    if not is_valid_date(date):
+        return []
+
     with get_db_cursor() as cursor:
         cursor.execute("SELECT * FROM expenses WHERE expense_date=%s", (date,))
         expenses = cursor.fetchall()
@@ -78,10 +89,12 @@ def break_expense_by_category_percentage(start_date, end_date):
     return helper_expense_to_category_percent(expenses)
 
 def fetch_expense_summary(start_date, end_date):
+    if not is_valid_date(start_date) or not is_valid_date(end_date):
+        return []
+
     with get_db_cursor() as cursor:
         cursor.execute("SELECT category, SUM(amount) as total FROM expenses WHERE expense_date BETWEEN %s AND %s GROUP BY category", (start_date, end_date))
         return cursor.fetchall()
-
 
 if __name__ == "__main__":
     print("db_helper.py")
