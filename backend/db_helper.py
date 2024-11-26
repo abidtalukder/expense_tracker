@@ -1,6 +1,9 @@
 from contextlib import contextmanager
 import mysql.connector
 from datetime import datetime
+from setup_logger import get_logger
+
+logger = get_logger("db_helper", "db_helper.log")
 
 def is_valid_date(date_str):
     try:
@@ -36,6 +39,8 @@ def get_db_cursor(commit=False):
 
 # fetching functions
 def fetch_expenses_for_date(date):
+    logger.info(f"Fetching expenses for date: {date}")
+
     if not is_valid_date(date):
         return []
 
@@ -45,6 +50,8 @@ def fetch_expenses_for_date(date):
         return expenses
 
 def fetch_expenses_by_date_range(start_date, end_date):
+    logger.info(f"Fetching expenses between {start_date} and {end_date}")
+
     with get_db_cursor() as cursor:
         cursor.execute("SELECT * FROM expenses WHERE expense_date BETWEEN %s AND %s", (start_date, end_date))
         return cursor.fetchall()
@@ -59,6 +66,7 @@ def delete_expense(expense_id):
         cursor.execute("DELETE FROM expenses WHERE id=%s", (expense_id,))
 
 def add_expense(date,amount,category,notes):
+    logger.info(f"Adding expense: {date}, {amount}, {category}, {notes}")
     with get_db_cursor(commit=True) as cursor:
         cursor.execute("INSERT INTO expenses (expense_date,amount,category,notes) VALUES (%s, %s, %s, %s)", (date,amount,category,notes))
 
@@ -89,6 +97,8 @@ def break_expense_by_category_percentage(start_date, end_date):
     return helper_expense_to_category_percent(expenses)
 
 def fetch_expense_summary(start_date, end_date):
+    logger.info(f"Fetching expense summary between {start_date} and {end_date}")
+
     if not is_valid_date(start_date) or not is_valid_date(end_date):
         return []
 
