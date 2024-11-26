@@ -58,9 +58,9 @@ def delete_expense(expense_id):
     with get_db_cursor(commit=True) as cursor:
         cursor.execute("DELETE FROM expenses WHERE id=%s", (expense_id,))
 
-def add_expense(id,date,amount,category,notes):
+def add_expense(date,amount,category,notes):
     with get_db_cursor(commit=True) as cursor:
-        cursor.execute("INSERT INTO expenses (id,expense_date,amount,category,notes) VALUES (%s, %s, %s, %s, %s)", (id,date,amount,category,notes))
+        cursor.execute("INSERT INTO expenses (expense_date,amount,category,notes) VALUES (%s, %s, %s, %s)", (date,amount,category,notes))
 
 def delete_expenses_by_date(date):
     with get_db_cursor(commit=True) as cursor:
