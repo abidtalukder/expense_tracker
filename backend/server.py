@@ -25,8 +25,8 @@ def add_or_update_expense(expense_date, expenses:List[Expense]=Body(...)):
         db_helper.add_expense(expense_date, expense.amount, expense.category, expense.notes)
     return {"status": "success"}
 
-@app.get("/analytics")
-def get_analytics(date_range: DateRange=Body(...)):
+@app.post("/analytics")
+def get_analytics(date_range: DateRange = Body(...)):
     logger.info(f"Fetching analytics between {date_range.start_date} and {date_range.end_date}")
 
     totals = db_helper.fetch_expense_summary(date_range.start_date, date_range.end_date)

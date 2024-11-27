@@ -1,6 +1,7 @@
 import streamlit as st
 from datetime import datetime
 import requests
+import matplotlib.pyplot as plt
 
 # Title of the app
 st.title("Expense Tracker")
@@ -76,6 +77,28 @@ with add_tab:
                 st.success("Expenses added successfully")
             else:
                 st.error("Failed to add expenses")
+
+with analytics_tab:
+    start_date = st.date_input("Start Date", datetime(2024,8,1), label_visibility="collapsed")
+    end_date = st.date_input("End Date", datetime(2024,8,1), label_visibility="collapsed")
+
+    response = requests.post(f"{API_URL}/analytics", json={"start_date": start_date.isoformat(), "end_date": end_date.isoformat()})
+    analytics = {}
+    if response.status_code == 200:
+        analytics = response.json()
+    else:
+        st.error("Failed to fetch analytics")
+
+    # display analytics with a pie chart
+    labels = list(analytics.keys())
+    values = [analytics[label]["percentage"] for label in labels]
+
+    fig, ax = plt.subplots()
+    ax.pie(values, labels=labels, autopct='%1.1f%%')
+    ax.axis('equal')
+
+    # display the chart
+    st.pyplot(fig)
 
 
 

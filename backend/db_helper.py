@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 import mysql.connector
-from datetime import datetime
+from datetime import datetime, date
 from setup_logger import get_logger
 
 logger = get_logger("db_helper", "db_helper.log")
@@ -99,8 +99,8 @@ def break_expense_by_category_percentage(start_date, end_date):
 def fetch_expense_summary(start_date, end_date):
     logger.info(f"Fetching expense summary between {start_date} and {end_date}")
 
-    if not is_valid_date(start_date) or not is_valid_date(end_date):
-        return []
+    # if not is_valid_date(start_date) or not is_valid_date(end_date):
+    #     return []
 
     with get_db_cursor() as cursor:
         cursor.execute("SELECT category, SUM(amount) as total FROM expenses WHERE expense_date BETWEEN %s AND %s GROUP BY category", (start_date, end_date))
