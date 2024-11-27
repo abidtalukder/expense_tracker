@@ -8,3 +8,7 @@ class Expense(BaseModel):
     notes: str
     expense_date: Optional[date] = None
     category: str
+
+class DateRange(BaseModel):
+    start_date: date
+    end_date: date
